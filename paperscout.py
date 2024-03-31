@@ -1,41 +1,10 @@
+import sys
 import os
 from optparse import OptionParser
-import datetime
 import json
-
 import asyncio
-import aiohttp
-from aiohttp.client import ClientSession
 
-from utils.api import apis
-
-
-async def get_results(days=3):
-    today = datetime.date.today()
-    prev_date = today - datetime.timedelta(days=days)
-    timeout = aiohttp.ClientTimeout(connect=60, total=180)
-    async with ClientSession(timeout=timeout) as session:
-        api_tasks = [api(session, prev_date, today) for api in apis.values()]
-        api_results = await asyncio.gather(*api_tasks)
-    return {k: v for k, v in zip(apis.keys(), api_results)}
-
-
-def parse_query(filename):
-    with open(filename, "r") as f:
-        return f.read().splitlines()
-
-
-def filter_results(results, queries):
-    if not queries:
-        return results
-    filtered_results = {k: [] for k in results.keys()}
-    for k, v in results.items():
-        for paper in v:
-            paper_text = " ".join(paper.values())
-            for q in queries:
-                if q in paper_text:
-                    filtered_results[k].append(paper)
-    return filtered_results
+from utils.helper import get_results, parse_query, unique_results, filter_results
 
 
 if __name__ == "__main__":
@@ -57,12 +26,12 @@ if __name__ == "__main__":
         print(f"Invalid number of days {options.num_days}, defaulting to 1.")
         num_days = 1
     
-    try:
-        loop = asyncio.get_event_loop()
-        results = loop.run_until_complete(get_results(num_days))
-    except Exception as e:
-        print(f"Error fetching papers, try again later: {e}")
-    filtered_results = filter_results(results, queries)
-    
+    loop = asyncio.get_event_loop()
+    results = loop.run_until_complete(get_results(num_days))
+
+    results = unique_results(results)
+    results = filter_results(results, queries)
+    results = {'query': queries} | results
+
     with open(options.output, "w") as f:
-        json.dump(filtered_results, f, indent=4)
+        json.dump(results, f, indent=4)
