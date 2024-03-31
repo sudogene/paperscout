@@ -12,7 +12,7 @@ Options:
   -o OUTPUT    Output JSON file. Default papers.json.
 ```
 ---
-#### Supported journals
+#### Support
 
 * biorxiv
 * medrxiv
