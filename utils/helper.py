@@ -18,9 +18,10 @@ async def get_results(days=1, retries=3):
                 api_tasks = [api(session, prev_date, today) for api in apis.values()]
                 api_results = await asyncio.gather(*api_tasks)
                 results = {k: v for k, v in zip(apis.keys(), api_results)}
+                return results
         except Exception as e:
             if attempt >= retries:
-                print(f"Max retries exceeded. Try again later :(")
+                print(f"Max retries ({retries}) exceeded. Try again later :(")
     return results
 
 
