@@ -4,7 +4,7 @@ import time
 import aiohttp
 
 
-async def biorxiv(session, start_date: datetime.date, end_date: datetime.date, wait=0.5):
+async def biorxiv(session, start_date: datetime.date, end_date: datetime.date, wait=0.1):
     start_date_str = start_date.strftime("%Y-%m-%d")
     end_date_str = end_date.strftime("%Y-%m-%d")
     url = f"https://api.biorxiv.org/details/biorxiv/{start_date_str}/{end_date_str}"
@@ -20,7 +20,7 @@ async def biorxiv(session, start_date: datetime.date, end_date: datetime.date, w
         return results
 
 
-async def medrxiv(session, start_date: datetime.date, end_date: datetime.date, wait=0.5):
+async def medrxiv(session, start_date: datetime.date, end_date: datetime.date, wait=0.1):
     start_date_str = start_date.strftime("%Y-%m-%d")
     end_date_str = end_date.strftime("%Y-%m-%d")
     url = f"https://api.biorxiv.org/details/medrxiv/{start_date_str}/{end_date_str}"
